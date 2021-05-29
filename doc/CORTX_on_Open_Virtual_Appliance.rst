@@ -18,7 +18,7 @@ All of the following hypervisors should work: `VMware ESX Server <https://www.vm
 **********
 Procedure
 **********
-The procedure to install CORTX on OVA is mentioned below.
+The procedure to install CORTX on OVA is mentioned below,
 
 #. Download the `cortx-va-1.0.3.ova <https://github.com/Seagate/cortx/releases/download/ova-1.0.3/cortx-va-1.0.3.ova>`_ file from `our release page <https://github.com/Seagate/cortx/releases/latest>`_. This contains the virtual machine image.
 
