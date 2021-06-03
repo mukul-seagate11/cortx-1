@@ -67,7 +67,7 @@ The CORTX deployment and configuration is four step procedure:
 
 ## Procedure
 
-1. Generate the CORTX deployment packages using the instructions provided in [Generating the CORTX packages guide](https://github.com/TechWriter-Mayur/cortx/blob/main/doc/Deploy-Cortx-Build-Stack.md).
-2. Deploy the packages generated to create CORTX cluster using the instruction provided in [Deploy Cortx Build Stack guide](https://github.com/TechWriter-Mayur/cortx/blob/For-Community-Build-Release/doc/ProvisionReleaseBuild.md).
-3. Configure the CORTX GUI using the instruction provided in [Configuring the CORTX GUI document](https://github.com/TechWriter-Mayur/cortx/blob/main/doc/Preboarding_and_Onboarding.rst).
-4. Create an S3 account and perform the IO operations using the instruction provided in [IO operation in CORTX](https://github.com/TechWriter-Mayur/cortx/blob/main/doc/Performing_IO_Operations_Using_S3Client.rst).
+1. Generate the CORTX deployment packages using the instructions provided in [Generating the CORTX packages guide](https://github.com/TechWriter-Mayur/cortx/blob/CORTX-Community-Build-Release/doc/Deploy-Cortx-Build-Stack.md).
+2. Deploy the packages generated to create CORTX cluster using the instruction provided in [Deploy Cortx Build Stack guide](https://github.com/TechWriter-Mayur/cortx/blob/CORTX-Community-Build-Release/doc/ProvisionReleaseBuild.md).
+3. Configure the CORTX GUI using the instruction provided in [Configuring the CORTX GUI document](https://github.com/TechWriter-Mayur/cortx/blob/CORTX-Community-Build-Release/doc/Preboarding_and_Onboarding.rst).
+4. Create an S3 account and perform the IO operations using the instruction provided in [IO operation in CORTX](https://github.com/TechWriter-Mayur/cortx/blob/CORTX-Community-Build-Release/doc/Performing_IO_Operations_Using_S3Client.rst).
