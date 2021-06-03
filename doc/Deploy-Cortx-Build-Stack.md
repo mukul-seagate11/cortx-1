@@ -12,33 +12,25 @@ This document provides step-by-step instructions to build and generate the CORTX
 1. Run the following command to clone the CORTX repository:
 
 ```
-    
  cd /root && git clone https://github.com/Seagate/cortx --recursive --depth=1
-   
 ```
 
 2. Run the following command to checkout the codebase from **main** branch for all components:
 
 ```
-   
   docker run --rm -v /var/artifacts:/var/artifacts -v /root/cortx:/cortx-workspace ghcr.io/seagate/cortx-build:centos-7.8.2003 make checkout BRANCH=main
-   
 ```
 
 3. Run the following command to create a directory to store packages:
 
 ```
-   
   mkdir -p /var/artifacts
-   
 ```
 
 4. Run the following command to build the CORTX packages:
 
 ```
-   
   docker run --rm -v /var/artifacts:/var/artifacts -v /root/cortx:/cortx-workspace ghcr.io/seagate/cortx-build:centos-7.8.2003 make clean build
-   
 ```
 
    **Note:** To generate all the CORTX packages this step can take more than an hour.
@@ -46,23 +38,18 @@ This document provides step-by-step instructions to build and generate the CORTX
 5. Run the following command to generate the ISO for each component:
 
 ```
-   
   docker run --rm -v /var/artifacts:/var/artifacts -v /root/cortx:/cortx-workspace ghcr.io/seagate/cortx-build:centos-7.8.2003 make iso_generation
-   
 ```
 
 6. The CORTX build is generated in the directory created at step 3. To view the generated build, run:
 
 ```
-   
-  ll /var/artifacts/0/
-   
+  ll /var/artifacts/0/ 
 ```
 
-  The system output displays as follows:
+    The system output displays as follows:
 
-```
-   
+``` 
   [root@ssc-vm-2699 ~]# ll /var/artifacts/0/
   total 1060876
   drwxr-xr-x  12 root root      4096 Apr  9 07:23 3rd_party
@@ -72,21 +59,17 @@ This document provides step-by-step instructions to build and generate the CORTX
   drwxr-xr-x 198 root root      4096 Apr  9 07:23 python_deps
   -rw-r--r--   1 root root 240751885 Apr  9 07:23 python-deps-1.0.0-0.tar.gz
   -rw-r--r--   1 root root 845556896 Apr  9 07:23 third-party-centos-7.8.2003-1.0.0-0.tar.gz
-   
 ```
 
 7. To view the each component targets, run:
 
 ```
-   
-  docker run ghcr.io/seagate/cortx-build:centos-7.8.2003 make help
-   
+  docker run ghcr.io/seagate/cortx-build:centos-7.8.2003 make help 
 ```
 
-  The system output displays as follows:
+    The system output displays as follows:
 
 ```
-   
   [root@ssc-vm-1613 cortx-**]# time docker run ghcr.io/seagate/cortx-build:centos-7.8.2003 make help
   usage: make "target"
 
@@ -123,7 +106,6 @@ This document provides step-by-step instructions to build and generate the CORTX
      cortx-prvsnr: generate cortx-prvsnr packages.
 
      iso_generation: generate ISO file from release build.
-  
 ```
 
 8. Deploy the packages generated to create CORTX cluster using the instruction provided in [Deploy Cortx Build Stack guide](https://github.com/Seagate/cortx/blob/main/doc/ProvisionReleaseBuild.md).
