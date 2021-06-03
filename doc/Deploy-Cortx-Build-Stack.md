@@ -67,7 +67,9 @@ This document provides step-by-step instructions to build and generate the CORTX
   docker run ghcr.io/seagate/cortx-build:centos-7.8.2003 make help 
 ```
 
+
     The system output displays as follows:
+
 
 ```
   [root@ssc-vm-1613 cortx-**]# time docker run ghcr.io/seagate/cortx-build:centos-7.8.2003 make help
