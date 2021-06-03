@@ -1,203 +1,204 @@
 # Deploy Cortx Build Stack
 
-You will need to complete this [guide](https://github.com/Seagate/cortx/blob/main/doc/Release_Build_Creation.rst) before moving onto the steps below.
+This document provides step-by-step instructions to deploy the CORTX stack. After completing the steps provided in this document you can:
 
-## Before You Start  
-### Checklist:
-#### Single-Node VM Deployment
+  - Deploy all the CORTX components
+  - Create and run the CORTX cluster
 
- -  [x]  Please create VM(s) with at least 1 CPUs and 4GB of RAM.  
- -  [x]  For single-node VM deployment, ensure the VM is created with 2+ attached disks.
- -  [x]  Do you see the devices on execution of this command: lsblk ?  
- -  [x]  Do the systems on your setup have valid hostnames, are the hostnames accessible: ping <hostname>?  
- -  [x]  Do you have IPs' assigned to all NICs ensxx, ensxx and ensxx?  
- -  [x]  Identify primary node and run below commands on primary node  
-    
-**NOTE**: For single-node VM, the VM node itself is treated as primary node.
 
-### Pre-requisite
+## Prerequisite
 
-- Change Hostname by running,
-   ```
-   sudo hostnamectl set-hostname deploy-test.cortx.com
-   ```
-   - Please use this hostname to avoid issues further in the bootstrap process.
-   - Make sure the hostname is changed by running `hostname -f`
- 
-**Note:** You can change the hostname as per your requirement
- 
-- Disable SElinux by running,
-   ```
-   sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
-   ```
- 
- **Note:** Reboot the VM by running `reboot` command after disabling SElinux
- 
+- All the prerequisites specified in the [Setting up the CORTX Environment for Single Node]() must be satisfied.
+
+- The CORTX packages must be generated using the steps provided in [Deploy Cortx Build Stack](https://github.com/Seagate/cortx/blob/main/doc/Release_Build_Creation.rst).
+
 - Set repository URL
-   ```
-   export CORTX_RELEASE_REPO="file:///var/artifacts/0"
-   ```
-   
-## Procedure for VM Deployment Steps
-
-### 1. Install Provisioner API and requisite packages
-   ```
-   yum install -y yum-utils
-   yum-config-manager --add-repo "${CORTX_RELEASE_REPO}/3rd_party/"
-   yum-config-manager --add-repo "${CORTX_RELEASE_REPO}/cortx_iso/"
-
-   cat <<EOF >/etc/pip.conf
-   [global]
-   timeout: 60
-   index-url: $CORTX_RELEASE_REPO/python_deps/
-   trusted-host: $(echo $CORTX_RELEASE_REPO | awk -F '/' '{print $3}')
-   EOF
-
-   # Cortx Pre-requisites
-   yum install --nogpgcheck -y java-1.8.0-openjdk-headless
-   yum install --nogpgcheck -y python3 cortx-prereq sshpass
-   
-   # Pre-reqs for Provisioner
-   yum install --nogpgcheck -y python36-m2crypto salt salt-master salt-minion
-   
-   # Provisioner API
-   yum install --nogpgcheck -y python36-cortx-prvsnr
-
-   # Verify provisioner version (0.36.0 and above)
-   provisioner --version
-   ```
-### 2. Cleanup temporary repos
-   ```
-    rm -rf /etc/yum.repos.d/*3rd_party*.repo
-    rm -rf /etc/yum.repos.d/*cortx_iso*.repo
-    yum clean all
-    rm -rf /var/cache/yum/
-    rm -rf /etc/pip.conf
-   ```
-   
-### 3. Create the config.ini file
-
-**Note:** You can find the devices on your node by running below command to update in config.ini
-    
-    device_list=$(lsblk -nd -o NAME -e 11|grep -v sda|sed 's|sd|/dev/sd|g'|paste -s -d, -)
-
-  - Values for storage.cvg.0.metadata_devices:
-   ```
-    echo ${device_list%%,*}
-   ```
-  - Values for storage.cvg.0.data_devices:
-   ``` 
-    echo ${device_list#*,}
-   ```
-  - You can find the interfaces as per zones defined in your setup by running,
-   ```
-    firewall-cmd --get-active-zones
-   ```
-  - Firewall must be disabled to connect to GUI and do IO operations
-  ```
-  systemctl stop firewalld
-  systemctl disable firewalld
-  ```
-    vi ~/config.ini
-    
-   - Paste the code below into the config file replacing your network interface names with ens33,..ens35 and storage disks with /dev/sdb,../dev/sdc
-   ```
-   [srvnode_default]
-   network.data.private_interfaces=ens35
-   network.data.public_interfaces=ens34
-   network.mgmt.interfaces=ens33
-   bmc.user=None
-   bmc.secret=None
-   
-   storage.cvg.0.data_devices=/dev/sdc
-   storage.cvg.0.metadata_devices=/dev/sdb
-   network.data.private_ip=None
-
-   [srvnode-1]
-   hostname=deploy-test.cortx.com
-   roles=primary,openldap_server
-
-   [enclosure_default]
-   type=other
-
-   [enclosure-1]
-   ```
-### 4. Bootstrap Node
-   ```
-    provisioner setup_provisioner srvnode-1:$(hostname -f) \
-    --logfile --logfile-filename /var/log/seagate/provisioner/setup.log --source rpm \
-    --config-path ~/config.ini --dist-type bundle --target-build ${CORTX_RELEASE_REPO}
-   ```
-### 5. Prepare Pillar Data
-
-Update data from config.ini into Salt pillar. Export pillar data to provisioner_cluster.json
-   ```
-    provisioner configure_setup ./config.ini 1
-    salt-call state.apply components.system.config.pillar_encrypt
-    provisioner confstore_export
-   ```
-
-## Non-Cortx Group: System & 3rd-Party Softwares
-
-- ### System components:
 
    ```
-   provisioner deploy_vm --setup-type single --states system
+     export CORTX_RELEASE_REPO="file:///var/artifacts/0"
    ```
 
-- ### 3rd-Party components:
+## Procedure
+
+1. Set repository URL using the following command:
 
    ```
-   provisioner deploy_vm --setup-type single --states prereq
+     export CORTX_RELEASE_REPO="file:///var/artifacts/0"   
    ```
 
-## Cortx Group: Utils, IO Path & Control Path
-
-- ### Utils component:
+2. Run the following command to install the provisioner APIs and required packages:
 
    ```
-   provisioner deploy_vm --setup-type single --states utils
+      yum install -y yum-utils
+      yum-config-manager --add-repo "${CORTX_RELEASE_REPO}/3rd_party/"
+      yum-config-manager --add-repo "${CORTX_RELEASE_REPO}/cortx_iso/"
+
+      cat <<EOF >/etc/pip.conf
+      [global]
+      timeout: 60
+      index-url: $CORTX_RELEASE_REPO/python_deps/
+      trusted-host: $(echo $CORTX_RELEASE_REPO | awk -F '/' '{print $3}')
+      EOF
+
+      # Cortx Pre-requisites
+      yum install --nogpgcheck -y java-1.8.0-openjdk-headless
+      yum install --nogpgcheck -y python3 cortx-prereq sshpass
+
+      # Pre-reqs for Provisioner
+      yum install --nogpgcheck -y python36-m2crypto salt salt-master salt-minion
+
+      # Provisioner API
+      yum install --nogpgcheck -y python36-cortx-prvsnr
+
+      # Verify provisioner version (0.36.0 and above)
+      provisioner --version
    ```
 
-- ### IO Path components:
+3. Run the following commands to clean the temporary repos:
 
    ```
-   provisioner deploy_vm --setup-type single --states iopath
+      rm -rf /etc/yum.repos.d/*3rd_party*.repo
+      rm -rf /etc/yum.repos.d/*cortx_iso*.repo
+      yum clean all
+      rm -rf /var/cache/yum/
+      rm -rf /etc/pip.conf
    ```
 
-- ### Control Path components:
+4. Create the config.ini file:
+
+     **Note:** The config.ini file requires you to add the metadata disk, data disk, and NICs, information. Run the following command to find the devices on your node:
+
+    ```
+      device_list=$(lsblk -nd -o NAME -e 11|grep -v sda|sed 's|sd|/dev/sd|g'|paste -s -d, -)
+    ```
+
+   A. To find the metadata disks value for storage.cvg.0.metadata_devices, run:
+
+     ```  
+        echo ${device_list%%,*}
+     ```
+
+   B. To find the data disks value for storage.cvg.0.data_devices, run:
+
+      ```
+        echo ${device_list#*,}
+      ```
+
+   C. To find the interfaces as per zones defined in your VM, run:
+
+      ```
+        firewall-cmd --get-active-zones
+      ```
+
+   D. Run the following command to create configu,ini file:
+
+      ```
+        vi ~/config.ini
+      ```
+
+  E. Paste the code below in to the config file replacing your network interface names with ens33,ens34, ens35, and storage disks with /dev/sdb,../dev/sdc:
+
+     ```
+         [srvnode_default]
+         network.data.private_interfaces=ens35
+         network.data.public_interfaces=ens34
+         network.mgmt.interfaces=ens33
+         bmc.user=None
+         bmc.secret=None
+
+         storage.cvg.0.data_devices=/dev/sdc
+         storage.cvg.0.metadata_devices=/dev/sdb
+         network.data.private_ip=None
+
+         [srvnode-1]
+         hostname=deploy-test.cortx.com
+         roles=primary,openldap_server
+
+         [enclosure_default]
+         type=other
+
+         [enclosure-1]
+     ```
+
+5. To run the bootstrap Node:
 
    ```
-   provisioner deploy_vm --setup-type single --states controlpath
+      provisioner setup_provisioner srvnode-1:$(hostname -f) \
+      --logfile --logfile-filename /var/log/seagate/provisioner/setup.log --source rpm \
+      --config-path ~/config.ini --dist-type bundle --target-build ${CORTX_RELEASE_REPO}
    ```
 
-## Cortx Group: HA
-
-- ### HA components:
+6. Prepare the pillar data from the config.ini into Salt pillar, then export the pillar data to provisioner_cluster.json using following commands:
 
    ```
-   provisioner deploy_vm --setup-type single --states ha
+      provisioner configure_setup ./config.ini 1
+      salt-call state.apply components.system.config.pillar_encrypt
+      provisioner confstore_export
    ```
 
-## Start cortx cluster (irrespective of number of nodes):
+7. Configure the system and 3rd-Party Softwares:
 
-- ### Execute the following command on primary node to start the cluster:
+   A. To configure the system components, run:
+
+     ```
+        provisioner deploy_vm --setup-type single --states system
+     ```
+
+   B. To configure third-party components, run:
+
+     ```
+       provisioner deploy_vm --setup-type single --states prereq
+     ```
+
+8. Configure the utils, IO path, and control path:
+
+   A. To configure the CORTX utils components, run:
+
+     ```
+       provisioner deploy_vm --setup-type single --states utils
+     ```
+
+   B. To configure the CORTX IO path components, run:
+
+     ```
+       provisioner deploy_vm --setup-type single --states iopath
+     ```
+
+   C. To configure CORTX control path components, run:
+
+     ```
+       provisioner deploy_vm --setup-type single --states controlpath
+     ```
+
+9. To configure CORTX HA components:
 
    ```
-   cortx cluster start
+     provisioner deploy_vm --setup-type single --states ha
    ```
 
-- ### Verify cortx cluster status:
+10. Run the following command to start the CORTX cluster:
 
    ```
-   hctl status
+    cortx cluster start
    ```
 
-### Usage:
+11. Run the following commands to verify the CORTX cluster status:
 
-Follow this [guide](https://github.com/Seagate/cortx/blob/main/doc/Preboarding_and_Onboarding.rst) to setup the GUI.
-   Then to test your system upload data using this [guide](https://github.com/Seagate/cortx/blob/main/doc/testing_io.rst)
+   ```
+      hctl status
+   ```
+   ![CORTX Cluster](images/hctl_status_output.png)
 
+12. Run the following commands to disable and stop the firewall:
+
+    ```
+      systemctl disable firewalld
+      systemctl stop firewalld
+    ```
+
+13. After the CORTX cluster is up and running, configure the [CORTX GUI guide](https://github.com/Seagate/cortx/blob/main/doc/Preboarding_and_Onboarding.rst).
+
+14. Create the S3 account and perform the IO operations using the instruction provided in [IO operation in CORTX](https://github.com/Seagate/cortx/blob/main/doc/testing_io.rst).
 
 
 ### Tested by:
