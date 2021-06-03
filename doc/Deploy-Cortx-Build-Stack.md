@@ -59,7 +59,7 @@ This document provides step-by-step instructions to build and generate the CORTX
    
    ```
 
-  The system output displays as follows:
+     The system output displays as follows:
 
    ```
    
@@ -83,7 +83,7 @@ This document provides step-by-step instructions to build and generate the CORTX
    
    ```
 
-  The system output displays as follows:
+     The system output displays as follows:
 
    ```
    
