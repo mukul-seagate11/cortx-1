@@ -116,7 +116,7 @@ The procedure to install CORTX on OVA is mentioned below.
 
       - Once you select an NIC, ensure that you do not have conflicting NICs selected. 
       
-#. If you want to configure the static IPs:
+#. (Optional) To configure the static IPs instead of DHCP:
 
    - For Management Network static IP, run the following command:
 
@@ -168,15 +168,15 @@ The procedure to install CORTX on OVA is mentioned below.
    .. image:: images/FirewallZones.png
       
    
-#. Using the management IP from the **ip a l** command,  refer to these instructions to `configure the CORTX GUI <Preboarding_and_Onboarding.rst>`_. 
+#. Using the management IP from the **ip a l** command, refer to these instructions to `configure the CORTX GUI <Preboarding_and_Onboarding.rst>`_. 
 
-#. Now that you have the complete system up and running, using the data IP from the **ip a l** command, use these instructions `to test the system <Performing_IO_Operations_Using_S3Client.rst>`_  and observe activity in the GUI.  For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
+#. Now that you have the complete system up and running, using the data IP from the **ip a l** command, use these instructions `to test the system <Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
 
    .. image:: images/dashboard_read_write.png
 
 #. Please use these instructions which describe how to use the `command line interface to query and monitor <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_ the configuration, health, and activity of your CORTX system.
 
-#. BOOM.  You're all done and you're AWESOME.  Thanks for checking out the CORTX system; we hope you liked it.  Hopefully you'll stick around and participate in our community and help make it even better.
+#. BOOM. You're all done and you're AWESOME. Thanks for checking out the CORTX system; we hope you liked it. Hopefully you'll stick around and participate in our community and help make it even better.
 
 **Note:** The Lyve Pilot (LP) will be available in the future releases.
  
@@ -201,18 +201,6 @@ If you have a firewall between CORTX and the rest of your infrastructure, includ
 +----------------------+-------------------+---------------------------------------------+
 |         28100        |   TCP (HTTPS)     |              Management network             |
 +----------------------+-------------------+---------------------------------------------+
-
-If your disk does not have space, run the following command to clean up the logs from the **/var/log** file.
-
-::
-
- rm /var/log/<file to be deleted>
- 
-This step is applicable only if the earlier s3 sanity fails. Run the below mentioned script to delete the account and objects that were created as part of the earlier sanity.
-
-::
-
- sh /opt/seagate/cortx/s3/scripts/s3-sanity-test.sh -c
 
    
 Known Issues
