@@ -44,11 +44,11 @@ This setup is using DHCP, the IP changes are bound to happen during restart. The
 
     ``ip a l``
 
-   #. To verify the Date/Time is correct, run:
+5. To verify the Date/Time is correct, run:
 
       ``date``
 
-      If the time displayed is incorrect, use the following command to adjust time for timezone as necessary. If the time is not correctly configure, you might face SSL certificate issue later.
+    - If the time displayed is incorrect, use the following command to adjust time for timezone as necessary. If the time is not correctly configure, you might face SSL certificate issue later.
 
       ``date --set "[+/-]xhours [+/-]yminutes"``
       
