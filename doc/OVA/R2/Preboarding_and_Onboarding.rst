@@ -84,7 +84,7 @@ You can also perform the onboarding tasks from the **Settings** page.
    
    .. image:: images/NTP.PNG
 
-#. Optional: If you want to receive email notifications, select the **Subscribe to email notifications** checkbox. The **Notification settings: Email** page is displayed.
+#. (Optional) If you want to receive email notifications, select the **Subscribe to email notifications** checkbox. The **Notification settings: Email** page is displayed.
    
    #. Fill in the fields appropriately.
        

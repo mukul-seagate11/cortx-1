@@ -2,7 +2,8 @@
 ===============================
 CORTX on Open Virtual Appliance
 ===============================
-An Open Virtual Appliance (OVA) is a Virtual Machine (VM) image that consists of a pre-installed and pre-configured operating system as well as one or more applications packaged for easy deployment and testing.  This document describes how to use a CORTX OVA for the purposes of single-node CORTX testing.  The minimum recommended system should have at least 4 CPU cores, at least 8 GB of RAM, and at least 120 GB of local storage. Current version of the OVA requires DHCP server to assign IPs to all 3 network interfaces. For our Japanese community, this document has been translated and is available `here <https://qiita.com/Taroi_Japanista/items/0ac03f55dce3f7433adf>`_.
+An Open Virtual Appliance (OVA) is a Virtual Machine (VM) image that consists of a pre-installed and pre-configured operating system as well as one or more applications packaged for easy deployment and testing.  This document describes how to use a CORTX OVA for the purposes of single-node CORTX testing. Current version of the OVA requires DHCP server to assign IPs to all 3 network interfaces. 
+For our Japanese community, this document has been translated and is available `here <https://qiita.com/Taroi_Japanista/items/0ac03f55dce3f7433adf>`_.
 
 ***********************
 Recommended Hypervisors
@@ -13,90 +14,58 @@ All of the following hypervisors should work: `VMware ESX Server <https://www.vm
 `VMware Workstation <https://www.vmware.com/products/workstation-pro.html>`_, and
 `Oracle VM VirtualBox <https://www.oracle.com/virtualization/>`_. 
 
-**Important**: If you are running the VM in any of the VMWare hypervisors, it is not recommended to use VMware Tools, as CORTX may break due to kernel dependencies.  For the same reason, please do not update the operating system in the image as that also might cause it to fail.
+**Important**: If you are running the VM in any of the VMWare hypervisors, it is not recommended to use VMware Tools, as CORTX may break due to kernel dependencies. For the same reason, please do not update the operating system in the image as that also might cause it to fail.
+
+
+**Prerequisites:**
+
+- To run the CORTX OVA the following minimum configuration is required:
+
+   - RAM: 8GB
+   - Processor: 4 core CPU
+   - Storage: 120GB
+
+- Download the `CORTX OVA <https://github.com/Seagate/cortx/releases/>`_ file from `our release page <https://github.com/Seagate/cortx/releases/latest>`_. 
+- Import the OVA image using the instruction provided in  to `Importing the OVA document <Importing_OVA_File.rst>`_.
+- Ensure that the Virtualization platform has internet connectivity:
+   
+   - For VMware related troubleshooting, please refer to `VM Documents <https://docs.vmware.com/en/VMware-vSphere/index.html>`_. 
+   - If you do not see an ipv4 network configured, change your virtual networking configuration. See `troubleshooting virtual network <troubleshoot_virtual_network.rst>`_.
+   - For Oracle Virtual Box, see `troubleshooting Oracle VirtualBox Network Configuration <Oracle_Virtual_Box_Network_Configuration.md>`_.
+
 
 **********
 Procedure
 **********
-The procedure to install CORTX on OVA is mentioned below.
 
-#. Download the `CORTX OVA <https://github.com/Seagate/cortx/releases/>`_ file from `our release page <https://github.com/Seagate/cortx/releases/latest>`_. This contains the virtual machine image.
-
-#. Import the OVA image by referring to `these instructions <Importing_OVA_File.rst>`_. 
-
-   - For VMware related troubleshooting, please refer to `VM Documents <https://docs.vmware.com/en/VMware-vSphere/index.html>`_. 
-  
 #. Open the VM console, and login with the below credentials.
 
    * Username: cortx 
    * Password: opensource!
   
-#. **For Oracle VM VirtualBox Users ONLY**:
+#. Become the **root** user by running this:
    
-   .. raw:: html
-
-    <details>
-      <summary><a>Click here to view the steps.</a></summary>
-
-
-   You need to change the Network Device Name from enp0s3, enp0s8, enp0s9 to ens32, ens33 and ens34:
+   ::
    
-      **Note:** 
-      
-         - The Network Device names may not be the exact same as listed above, for example, enp0s8, enp0s9, enp0s17 instead of enp0s3, enp0s8, enp0s9.
-         - As the network is setup using DHCP, IP changes are bound to happen during restart, static IP configuration could be harder to maintain as it may not work for different VM with different network setups. 
+     sudo su
+
+#. Change the hostname by running the following command:
+
+   ::
    
-   
-   #. Use the following command to get your Network Device MAC address (Shown after **link/ether**)
+     hostnamectl set-hostname --static --transient --pretty <new-name>
 
-      * **ip a l**
+#. Add the host name to the config.ini file:
 
-   #. Record the MAC addresses and go to the following directory:
+   #. To open the config.ini file, run:
 
-      * **cd /etc/sysconfig/network-scripts/**
-      * **vi ifcfg-ens32**
-      * Add a new line under **BOOTPROTO=dhcp**
-      * Add a new parameter with the MAC Address *HWADDR=<MAC-Address>*
-      * Repeat the steps for enp0s8 and enp0s9 respectively
-      * **vi ifcfg-ens33**
-      * **vi ifcfg-ens34**
-
-      Sample output **cat ifcfg-ens34**:
-      
       ::
-      
-         DEVICE="ens34"
-         USERCTL="no"
-         TYPE="Ethernet"
-         BOOTPROTO="dhcp"
-         HWADDR=08:00:27:25:65:74
-         ONBOOT="yes"
-         PREFIX="24"
-         PREDNS="no"
-         DEFROUTE="no"
-         NM_CONTROLLED="no"
-         ZONE=trusted
+       
+        vi config.ini
 
-   #. Poweroff the machine by using **Poweroff** command and start again.
-
-   #. To verify the change in Network Device Name, run the following command:
-
-      * **ip a l**
-
-   #. The Date/Time would sometimes be incorrect as it uses local time as UTC
-
-      * **date**
-
-      If the time displayed is incorrect, use the following command to adjust time for timezone as necessary (Otherwise, you might face SSL certificate problems later). 
-      * **date --set "[+/-]xhours [+/-]yminutes"**
-      
-      For instance if your timezone is `4:30:00` ahead of UTC, then run the following command in VM. Note the `-` before minutes as well. Similarly if your timezone is behind of UTC, use +ve hours and +ve minutes to make the adjustment.
-
-      * **date --set "-4hours -30minutes"**
-      
-   .. raw:: html
-   
-      </details>
+   #. Add the hostname.
+   #. Save and close the config.ini file.
+   #. Reboot the VM.
 
 #. Start the CORTX services by running this bootstrap.sh script:
    
@@ -105,16 +74,6 @@ The procedure to install CORTX on OVA is mentioned below.
       sh /opt/seagate/cortx/provisioner/cli/virtual_appliance/bootstrap.sh
      
    Run the bootstrap script to ensure all the necessary services are operational.
-   
-#. **Before you begin:**
-   
-   - Ensure that you have configured your ipv4 network.
-
-      - If you do not see an ipv4 network configured, you might need to change your virtual networking configuration using  `these instructions <troubleshoot_virtual_network.rst>`_.
-
-   - From the Virtual Network Editor dialog, ensure you uncheck Automatic Settings and select the correct VMNet connection and NIC.
-
-      - Once you select an NIC, ensure that you do not have conflicting NICs selected. 
       
 #. (Optional) To configure the static IPs instead of DHCP:
 
@@ -144,12 +103,29 @@ The procedure to install CORTX on OVA is mentioned below.
          cat /etc/sysconfig/network-scripts/ifcfg-ens32 |grep -Ei "ip|netmask|gateway"
          cat /etc/sysconfig/network-scripts/ifcfg-ens33 |grep -Ei "ip|netmask|gateway"
 
-#. Check the health of CORTX using `hctl <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_ by running this command
+#. To start the CORTX Cluster, run the following command:
+
+   ::
+
+      cortx cluster start
+
+#. To check the `health of CORTX <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_ run the following command:
    
    ::
    
-      cortx --help
+      hctl status
    
+   The output should be similar to the image below
+
+   .. image:: images/hctl_status_output.png
+
+   **Note:** If the cortx cluster is not running then restart the cluster using following commands: 
+
+   ::
+      
+      cortx cluster stop 
+      cortx cluster start
+
 #. Run **ip a l** and record the IP addresses of the following interfaces:
 
    * ens32 - Management IP
@@ -157,28 +133,21 @@ The procedure to install CORTX on OVA is mentioned below.
    * ens34 - Private data IP (if present)
 
    .. image:: images/networks.png
-   
-   **Note:** To verify the interface zones, run the following command:
-
-   :: 
-
-      firewall-cmd --get-active-zones
 
    
-   .. image:: images/FirewallZones.png
-      
-   
-#. Using the management IP from the **ip a l** command, refer to these instructions to `configure the CORTX GUI <Preboarding_and_Onboarding.rst>`_. 
+#. Use the management IP from the **ip a l** command and configure the CORTX GUI, See `configure the CORTX GUI document <Preboarding_and_Onboarding.rst>`_. 
 
-#. Now that you have the complete system up and running, using the data IP from the **ip a l** command, use these instructions `to test the system <Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
+#. Now that you have the complete system up and running, Use the data IP from the **ip a l** command `to test the system <Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
 
    .. image:: images/dashboard_read_write.png
 
-#. Please use these instructions which describe how to use the `command line interface to query and monitor <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_ the configuration, health, and activity of your CORTX system.
+#. To use the CLI to query and monitor the configuration, health, and activity of your CORTX system, see `Checking Health document. <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_.
 
-#. BOOM. You're all done and you're AWESOME. Thanks for checking out the CORTX system; we hope you liked it. Hopefully you'll stick around and participate in our community and help make it even better.
+#. BOOM. You're all done and you're AWESOME. 
 
-**Note:** The Lyve Pilot (LP) will be available in the future releases.
+   Thanks for checking out the CORTX system; we hope you liked it. Hopefully you'll stick around and participate in our community and help make it even better.
+
+   **Note:** The Lyve Pilot (LP) will be available in the future releases.
  
 *************
 Miscellaneous
@@ -190,14 +159,8 @@ If you have a firewall between CORTX and the rest of your infrastructure, includ
 |    **Port number**   |   **Protocols**   |   **Destination network on CORTX**          |
 +----------------------+-------------------+---------------------------------------------+
 |          22          |        TCP        |           Management network                |
-+----------------------+-------------------+---------------------------------------------+ 
-|          53          |      TCP/UDP      | Management network and Public Data network  |
-+----------------------+-------------------+---------------------------------------------+ 
-|         123          |      TCP/UDP      |              Management network             |
 +----------------------+-------------------+---------------------------------------------+
 |         443          |       HTTPS       |             Public Data network             |
-+----------------------+-------------------+---------------------------------------------+
-|         9443         |       HTTPS       |              Public Data network            |
 +----------------------+-------------------+---------------------------------------------+
 |         28100        |   TCP (HTTPS)     |              Management network             |
 +----------------------+-------------------+---------------------------------------------+
