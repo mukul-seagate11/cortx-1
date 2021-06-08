@@ -117,8 +117,9 @@ Procedure
    
    The output should be similar to the image below
 
-   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/hctl_status_output.png
-
+   .. image:: https://github.com/TechWriter-Mayur/cortx/blob/R2-OVA-Branch/doc/images/hctl_status_output.png
+   
+   
    **Note:** If the cortx cluster is not running then restart the cluster using following commands: 
 
    ::
@@ -132,7 +133,7 @@ Procedure
    * ens33 - Public data IP
    * ens34 - Private data IP (if present)
 
-   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/networks.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/blob/R2-OVA-Branch/doc/images/networks.png
 
    
 #. Use the management IP from the **ip a l** command and configure the CORTX GUI, See `configure the CORTX GUI document <https://github.com/Seagate/cortx/blob/main/doc/Preboarding_and_Onboarding.rst>`_. 
@@ -152,7 +153,7 @@ Procedure
 
 #. The system up and running, use the data IP from the **ip a l** command `to test the system <https://github.com/Seagate/cortx/blob/main/doc/Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
 
-   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/dashboard_read_write.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/blob/R2-OVA-Branch/doc/images/dashboard_read_write.png
 
 #. To use the CLI to query and monitor the configuration, health, and activity of your CORTX system, see `Checking Health document. <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_.
 
@@ -189,11 +190,11 @@ Known Issues
 
 #. After configuring the CORTX GUI, if any system alerts are displayed. You can ignore these system alerts. 
 
-   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/AlertsError.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/blob/R2-OVA-Branch/doc/images/AlertsError.png
 
 #. As the Consul service is not running, you will encounter the below depicted error.
 
-   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/consul.PNG
+   .. image:: https://github.com/TechWriter-Mayur/cortx/blob/R2-OVA-Branch/doc/images/consul.PNG
 
    **Workaround:** Run the followind mentioned commands:
    
