@@ -23,9 +23,7 @@ All of the following hypervisors should work: `VMware ESX Server <https://www.vm
 
    - RAM: 8GB
    - Processor: 4 core CPU
-   - Storage: 60GB
-
-     Note: The CORTX OVA VM will create 9 disk partitions. 
+   - Storage: 120GB
 
 - Download the `CORTX OVA <https://github.com/Seagate/cortx/releases/>`_ file from `our release page <https://github.com/Seagate/cortx/releases/latest>`_. 
 - Import the OVA image using the instruction provided in  to `Importing the OVA document <https://github.com/Seagate/cortx/blob/main/doc/Importing_OVA_File.rst>`_.
@@ -105,6 +103,12 @@ Procedure
          cat /etc/sysconfig/network-scripts/ifcfg-ens32 |grep -Ei "ip|netmask|gateway"
          cat /etc/sysconfig/network-scripts/ifcfg-ens33 |grep -Ei "ip|netmask|gateway"
 
+#. To start the CORTX Cluster, run the following command:
+
+   ::
+
+      cortx cluster start
+
 #. To check the CORTX cluster status, run the following command:
    
    ::
@@ -113,7 +117,14 @@ Procedure
    
    The output should be similar to the image below
 
-   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/104hctl_status_output.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/hctl_status_output.png
+
+   **Note:** If the cortx cluster is not running then restart the cluster using following commands: 
+
+   ::
+      
+      cortx cluster stop 
+      cortx cluster start
 
 #. Run **ip a l** and record the IP addresses of the following interfaces:
 
@@ -121,7 +132,7 @@ Procedure
    * ens33 - Public data IP
    * ens34 - Private data IP (if present)
 
-   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/networks.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/networks.png
 
    
 #. Use the management IP from the **ip a l** command and configure the CORTX GUI, See `configure the CORTX GUI document <https://github.com/Seagate/cortx/blob/main/doc/Preboarding_and_Onboarding.rst>`_. 
@@ -141,7 +152,7 @@ Procedure
 
 #. The system up and running, use the data IP from the **ip a l** command `to test the system <https://github.com/Seagate/cortx/blob/main/doc/Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
 
-   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/dashboard_read_write.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/dashboard_read_write.png
 
 #. To use the CLI to query and monitor the configuration, health, and activity of your CORTX system, see `Checking Health document. <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_.
 
@@ -178,11 +189,11 @@ Known Issues
 
 #. After configuring the CORTX GUI, if any system alerts are displayed. You can ignore these system alerts. 
 
-   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/AlertsError.png
+   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/AlertsError.png
 
 #. As the Consul service is not running, you will encounter the below depicted error.
 
-   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/consul.PNG
+   .. image:: https://github.com/TechWriter-Mayur/cortx/tree/R2-OVA-Branch/doc/images/consul.PNG
 
    **Workaround:** Run the followind mentioned commands:
    
