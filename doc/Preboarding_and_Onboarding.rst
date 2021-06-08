@@ -1,16 +1,8 @@
 ==========================
-Configuring the CORTX GUI
+Preboarding and Onboarding
 ==========================
 
-This guide provides step-by-step instructions to configure the CORTX GUI. To configure the CORTX GUI you either had completed one of following guides:
-
-- `CORTX Open Virtual Appliance guide <CORTX_on_Open_Virtual_Appliance.rst>`_
-- `Setting up the CORTX Environment for SingleNode <Setting-up-the-CORTX-Environment-for-SingleNode>`_
-
-The step to configure the CORTX GUI gets completed in two step:
-
-- `Preboarding <#Preboarding>`_
-- `Onboarding <#Onbarding>`_
+::
 
 Preboarding
 ===========
@@ -89,7 +81,7 @@ You can also perform the onboarding tasks from the **Settings** page.
 #. Enter the NTP server address in the text box and select the NTP time zone offset from the drop-down menu. Then, click **Continue**.
    Multiple entries must be separated by comma.
 
-   - If you don't know your NTP server, ntp-b.nist.gov will usually work. To use another NTP server, visit `https://tf.nist.gov/tf-cgi/servers.cgi <https://tf.nist.gov/tf-cgi/servers.cgi>`_
+   - If you don't know your NTP server, ntp-b.nist.gov will usually work.
    
    .. image:: images/NTP.PNG
 
