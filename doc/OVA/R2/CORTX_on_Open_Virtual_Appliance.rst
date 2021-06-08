@@ -23,15 +23,17 @@ All of the following hypervisors should work: `VMware ESX Server <https://www.vm
 
    - RAM: 8GB
    - Processor: 4 core CPU
-   - Storage: 120GB
+   - Storage: 60GB
+
+     Note: The CORTX OVA VM will create 9 disk partitions. 
 
 - Download the `CORTX OVA <https://github.com/Seagate/cortx/releases/>`_ file from `our release page <https://github.com/Seagate/cortx/releases/latest>`_. 
 - Import the OVA image using the instruction provided in  to `Importing the OVA document <https://github.com/Seagate/cortx/blob/main/doc/Importing_OVA_File.rst>`_.
 - Ensure that the Virtualization platform has internet connectivity:
    
    - For VMware related troubleshooting, please refer to `VM Documents <https://docs.vmware.com/en/VMware-vSphere/index.html>`_. 
-   - If you do not see an ipv4 network configured, change your virtual networking configuration. See `troubleshooting virtual network <troubleshoot_virtual_network.rst>`_.
-   - For Oracle Virtual Box, see `troubleshooting Oracle VirtualBox Network Configuration <Oracle_Virtual_Box_Network_Configuration.md>`_.
+   - If on the VMware WorkStation, you do not see an IPv4 network configured, then update virtual networking configuration. See `troubleshooting virtual network <https://github.com/Seagate/cortx/blob/main/doc/troubleshoot_virtual_network.rst>`_.
+   - For Oracle Virtual Box network configuration, see `network configuration for Oracle VirtualBox <https://github.com/Seagate/cortx/blob/main/doc/Oracle_Virtual_Box_Network_Configuration.md>`_.
 
 
 **********
@@ -47,7 +49,7 @@ Procedure
    
    ::
    
-     sudo su
+     sudo su -
 
 #. Change the hostname by running the following command:
 
@@ -103,28 +105,15 @@ Procedure
          cat /etc/sysconfig/network-scripts/ifcfg-ens32 |grep -Ei "ip|netmask|gateway"
          cat /etc/sysconfig/network-scripts/ifcfg-ens33 |grep -Ei "ip|netmask|gateway"
 
-#. To start the CORTX Cluster, run the following command:
-
-   ::
-
-      cortx cluster start
-
-#. To check the `health of CORTX <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_ run the following command:
+#. To check the CORTX cluster status, run the following command:
    
    ::
    
-      hctl status
+      pcs status
    
    The output should be similar to the image below
 
-   .. image:: images/hctl_status_output.png
-
-   **Note:** If the cortx cluster is not running then restart the cluster using following commands: 
-
-   ::
-      
-      cortx cluster stop 
-      cortx cluster start
+   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/104hctl_status_output.png
 
 #. Run **ip a l** and record the IP addresses of the following interfaces:
 
@@ -132,14 +121,27 @@ Procedure
    * ens33 - Public data IP
    * ens34 - Private data IP (if present)
 
-   .. image:: images/networks.png
+   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/networks.png
 
    
-#. Use the management IP from the **ip a l** command and configure the CORTX GUI, See `configure the CORTX GUI document <Preboarding_and_Onboarding.rst>`_. 
+#. Use the management IP from the **ip a l** command and configure the CORTX GUI, See `configure the CORTX GUI document <https://github.com/Seagate/cortx/blob/main/doc/Preboarding_and_Onboarding.rst>`_. 
 
-#. Now that you have the complete system up and running, Use the data IP from the **ip a l** command `to test the system <Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
+#. Run the following command and verify the S3 authserver and HA proxy are active and running:
 
-   .. image:: images/dashboard_read_write.png
+   ::
+
+      systemctl status s3authserver
+      systemctl status haproxy
+   
+   - If any service is in failed state, run the following command active the services:
+
+      ::
+
+         systemctl start <service name>
+
+#. The system up and running, use the data IP from the **ip a l** command `to test the system <https://github.com/Seagate/cortx/blob/main/doc/Performing_IO_Operations_Using_S3Client.rst>`_ and observe activity in the GUI. For example, the below picture shows a CORTX dashboard after a user did an *S3 put* followed by an *S3 get*.
+
+   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/dashboard_read_write.png
 
 #. To use the CLI to query and monitor the configuration, health, and activity of your CORTX system, see `Checking Health document. <https://github.com/Seagate/cortx/blob/main/doc/checking_health.rst>`_.
 
@@ -176,11 +178,11 @@ Known Issues
 
 #. After configuring the CORTX GUI, if any system alerts are displayed. You can ignore these system alerts. 
 
-   .. image:: images/AlertsError.png
+   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/AlertsError.png
 
 #. As the Consul service is not running, you will encounter the below depicted error.
 
-   .. image:: images/consul.PNG
+   .. image:: https://github.com/Seagate/cortx/tree/main/doc/images/consul.PNG
 
    **Workaround:** Run the followind mentioned commands:
    
@@ -207,37 +209,3 @@ Tested by:
 - April 6, 2021: Harrison Seow (harrison.seow@seagate.com) using OVA release 1.0.3 on Windows 10 running VMware Workstation 16 Player.
 
 - Mar 25, 2021: Mukul Malhotra (mukul.malhotra@seagate.com) using OVA release 1.0.3 on Windows 10 running Oracle VirtualBox & VMware Workstation 6.1.16.
-
-- Mar 24, 2021:  Harrison Seow (harrison.seow@seagate.com) using OVA release 1.0.2 on Windows running Oracle VM VirtualBox 6.1.16.
-
-- Mar 18, 2021: Jalen Kan (jalen.j.kan@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Feb 4, 2021:  Tim Coulter (timothy.r.coulter@seagate.com) using OVA release 1.0.2 on MAC running VMWare Fusion 12.1.0
-
-- Jan 13, 2021: Mayur Gupta (mayur.gupta@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Jan 6, 2021: Patrick Hession (patrick.hession@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Dec 10, 2020: Suprit Shinde (suprit.shinde@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Nov 3, 2020: Justin Woo (justin.woo@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Oct 26, 2020: Gregory Touretsky (gregory.touretsky@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Oct 11, 2020: Saumya Sunder (saumya.sunder@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Oct 5, 2020: Andriy Tkachuk (andriy.tkachuk@seagate.com) using OVA release 1.0.2 by running VMWare Fusion 11.
-
-- Sep 18, 2020: Sarang Sawant (sarang.sawant@seagate.com) using OVA release 1.0.2 on a Windows laptop running VMWare Workstation.
-
-- Sep 19, 2020: Divya Kachchwaha Kachchwaha (divya.kachhwaha@seagate.com) using OVA release 1.0.1 on a Windows laptop running VMWare Workstation.
-
-- Sep 19, 2020: Venkataraman Padmanabhan (venkataraman.padmanabhan@seagate.com) using OVA release 1.0.0 and 1.0.1 on a Windows laptop running VMWare Workstation.
-
-- Sep 12, 2020: Mukul Malhotra (mukul.malhotra@seagate.com) using OVA release 1.0.0 and 1.0.1 on a Windows laptop running VMWare Workstation.
-
-- Sep 12, 2020: Puja Mudaliar (puja.mudaliar@seagate.com) using OVA release 1.0.0 on a Windows laptop running VMWare Workstation.
-
-- Sep 12, 2020: Gaurav Chaudhari (gaurav.chaudhari@seagate.com) using OVA release 1.0.0 on a Windows laptop running VMWare Workstation.
-
-
